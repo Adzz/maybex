@@ -3,25 +3,31 @@ defprotocol Maybe do
   def fold(left_or_right, left_function, right_function)
   # this is because the fold's right function has a default arg - the id function
   def fold(left_or_right, left_function)
+  def safe_pipe(left_or_right, left_function, right_function)
 end
 
 defimpl Maybe, for: Left do
-  def map(%Left{value: value}, _function) do
-    Left.new(value)
-  end
+  defdelegate map(left, function), to: Left
+  defdelegate fold(left, left_function, right_function \\ fn(x) -> x end), to: Left
 
-  def fold(%Left{value: value}, left_function, _right_function \\ fn(x) -> x end) do
-    left_function.(value)
+  def safe_pipe(%Left{value: value}, left_function, _right_function) do
+    Either.new(left_function.(value))
   end
 end
 
 defimpl Maybe, for: Right do
-  def map(%Right{value: value}, func) do
-    Right.new(func.(value))
-  end
+  defdelegate map(right, function), to: Right
+  defdelegate fold(right, left_branch, right_branch \\ fn(x) -> x end), to: Right
 
-  def fold(%Right{value: value}, _left_function, right_function \\ fn(x) -> x end) do
-    right_function.(value)
+  def safe_pipe(%Right{value: value}, _left_function, right_function) do
+    Either.new(right_function.(value))
   end
 end
 
+# What module should this exist in?
+# The overarching library name?
+#defmodule Wizard do
+#  defmacro fmap(functor, function) do
+#    quote(do: Maybe.map(unquote(functor), unquote(function)))
+#  end
+#end
