@@ -1,13 +1,10 @@
 defmodule Left do
   @enforce_keys [:value]
   defstruct [:value]
-
-  def new(value) do
-    %Left{value: value}
-  end
+  defdelegate new(value), to: Either
 
   def map(%Left{value: value}, _function) do
-    Left.new(value)
+    Either.new(value)
   end
 
   def fold(%Left{value: value}, left_function, _right_function \\ fn(x) -> x end) do

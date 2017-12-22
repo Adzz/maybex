@@ -24,10 +24,3 @@ defimpl Maybe, for: Right do
   end
 end
 
-# What module should this exist in?
-# The overarching library name?
-#defmodule Wizard do
-#  defmacro fmap(functor, function) do
-#    quote(do: Maybe.map(unquote(functor), unquote(function)))
-#  end
-#end

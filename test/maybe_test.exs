@@ -3,7 +3,7 @@ defmodule MaybeTest do
 
   describe ".map/2" do
     test "Mapping a left will return the left unchanged" do
-      left = Either.new(nil) 
+      left = Either.new(nil)
       assert Maybe.map(left, fn (_)-> "this wont run" end) == left
     end
 
@@ -14,7 +14,7 @@ defmodule MaybeTest do
 
     test "Mapping over a right that returns a nil should return a left" do
       right = Either.new(10)
-      assert Maybe.map(right, fn (x)-> nil end) == %Left{value: nil}
+      assert Maybe.map(right, fn (_)-> nil end) == %Left{value: nil}
     end
   end
 
