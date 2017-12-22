@@ -1,6 +1,6 @@
 # Maybe
 
-**TODO: Add description**
+To run test at the root of the project run `mix test`
 
 ## Installation
 
@@ -18,4 +18,3 @@ end
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/maybe](https://hexdocs.pm/maybe).
-
