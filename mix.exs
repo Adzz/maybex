@@ -8,13 +8,15 @@ defmodule Maybex.Mixfile do
       elixir: "~> 1.5",
       # Docs
       name: "Maybex",
-      source_url: "https://github.com/adzz/maybex",
+      source_url: "https://github.com/Adzz/maybex",
       docs: [
         main: "Either",
         extras: ["README.md"]
         ],
       start_permanent: Mix.env == :prod,
-      deps: deps()
+      deps: deps(),
+      description: description(),
+      package: package(),
     ]
   end
 
@@ -27,6 +29,18 @@ defmodule Maybex.Mixfile do
   defp deps do
     [
       {:ex_doc, "~> 0.16", only: :dev, runtime: false}
+    ]
+  end
+
+  defp description do
+    "An implementation of the Maybe monad in elixir"
+  end
+
+  defp package do
+    [
+      licenses: ["Apache 2.0"],
+      maintainers: ["Adam Lancaster"],
+      links: %{"Github" => "https://github.com/adzz/maybex"}
     ]
   end
 end
