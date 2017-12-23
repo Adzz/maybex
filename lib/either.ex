@@ -1,6 +1,9 @@
 defmodule Either do
   @moduledoc """
   This is what you use to wrap a value that might be nil.
+
+  An Either contains one function `new` whose job it is to produce either a `Right`
+  or a `Left`
   """
 
   @doc """
