@@ -1,12 +1,12 @@
 # Maybex
 
-The maybe monad is a way to handle values that might be nil without exploding our programs. Thhe approach taken here is to begin by wrapping the function that might return a nil in an `Either`.
+The maybe monad is a way to handle values that might be nil without exploding our programs. The approach taken here is to begin by wrapping the function that might return a nil in an `Either`.
 
 ```elixir
 Either.new(function_that_might_return_nil)
 ```
 
-This will return either (see what I did there) a `Left` or a `Right`. `Left`'s are containers `nil` values. Everything else will be contained in a `Right`. That is to say, if the function we pass to an `Either` actually returns a nil, we will get a `%Left{value: nil}` out. If it returns any other value, we will get a `%Right{}`, with the result of the function contained inside.
+This will return either (see what I did there) a `Left` or a `Right`. `Left`'s are containers for `nil` values. Everything else will be contained in a `Right`. That is to say, if the function we pass to an `Either` actually returns a nil, we will get a `%Left{value: nil}` out. If it returns any other value, we will get a `%Right{}`, with the result of the function contained inside.
 
 What does this buy us?
 
