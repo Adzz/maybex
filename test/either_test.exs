@@ -6,7 +6,7 @@ defmodule EitherTest do
   end
 
   test "Returns a right if initialized with a value that is not nil" do
-    # should use property based tests hehre
+    # should use property based tests here
     assert Either.new(true) == %Right{value: true}
     assert Either.new("") == %Right{value: ""}
     assert Either.new(10) == %Right{value: 10}

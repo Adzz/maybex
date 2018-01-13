@@ -10,8 +10,16 @@ defmodule Right do
   Applies the given function to the value contained inside the `Right`. Returns a
   new `Right` with the result of that calculation inside it.
   """
+  def map(%Right{value: value}, func) when is_function(value) do
+    value
+    |> compose(func)
+    |> Either.new()
+  end
   def map(%Right{value: value}, func) do
-    Either.new(func.(value))
+    func = curry(func)
+    value
+    |> func.()
+    |> Either.new()
   end
 
   @doc """
@@ -21,5 +29,24 @@ defmodule Right do
   """
   def fold(%Right{value: value}, _left_function, right_function \\ fn(x) -> x end) do
     right_function.(value)
+  end
+
+  defp compose(f, g) when is_function(g) do
+    fn arg -> compose(f, g.(arg)) end
+    fn arg -> compose(curry(f), curry(g).(arg)) end
+  end
+  defp compose(f, arg) do
+    f.(arg)
+  end
+
+  defp curry(fun) do
+    {_, arity} = :erlang.fun_info(fun, :arity)
+    curry(fun, arity, [])
+  end
+  defp curry(fun, 0, arguments) do
+    apply(fun, Enum.reverse arguments)
+  end
+  defp curry(fun, arity, arguments) do
+    fn arg -> curry(fun, arity - 1, [arg | arguments]) end
   end
 end

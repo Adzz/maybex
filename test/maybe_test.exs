@@ -2,30 +2,44 @@ defmodule MaybeTest do
   use ExUnit.Case
 
   describe ".map/2" do
-    test "Mapping a left will return the left unchanged" do
-      left = Either.new(nil)
+    setup do
+      %{
+        right: Either.new(10),
+        left: Either.new(nil),
+      }
+    end
+
+    test "Mapping a left will return the left unchanged", %{left: left} do
       assert Maybe.map(left, fn (_)-> "this wont run" end) == left
     end
 
-    test "Mapping a right will run the function on the value contained in the right" do
-      right = Either.new(10)
-      assert Maybe.map(right, fn (x)-> x+10 end) == %Right{value: 20}
+    test "Mapping a right will run the function on the value contained in the right", %{right: right} do
+      assert Maybe.map(right, fn (x)-> x + 10 end) == %Right{value: 20}
     end
 
-    test "Mapping over a right that returns a nil should return a left" do
-      right = Either.new(10)
-      assert Maybe.map(right, fn (_)-> nil end) == %Left{value: nil}
+    test "Mapping over a right that returns a nil should return a left", %{right: right} do
+      assert Maybe.map(right, fn (_) -> nil end) == %Left{value: nil}
+    end
+
+    test "it will partially apply a function", %{right: right} do
+
+      assert Maybe.map(right, fn (x, y) -> x + y end).value.(20) == 30
     end
   end
 
   describe "./safe_pipe/3" do
-    test "runs else_function on the value wrapped in the Left if passed a left, returns a the result wrapped" do
-      left = Either.new(nil)
+    setup do
+      %{
+        right: Either.new(10),
+        left: Either.new(nil),
+      }
+    end
+
+    test "runs else_function on the value wrapped in the Left if passed a left, returns a the result wrapped", %{left: left} do
       assert Maybe.safe_pipe(left, fn (_) -> nil end, fn (_) -> "this wont run" end) == %Left{value: nil}
     end
 
-    test "if passed a right runs the if_function on the value wrapped in the right and returns the result wrapped" do
-      right = Either.new(10)
+    test "if passed a right runs the if_function on the value wrapped in the right and returns the result wrapped", %{right: right} do
       assert Maybe.safe_pipe(right, fn(_)->"this wont run" end, fn(x)-> x + 10 end) == %Right{value: 20}
     end
   end
