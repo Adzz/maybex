@@ -15,6 +15,9 @@ defmodule Right do
     |> compose(func)
     |> Either.new()
   end
+  def map(right = %Right{}, %Right{value: value}) do
+    map(right, value)
+  end
   def map(%Right{value: value}, func) do
     func = curry(func)
     value

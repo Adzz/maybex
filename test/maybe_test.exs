@@ -22,8 +22,27 @@ defmodule MaybeTest do
     end
 
     test "it will partially apply a function", %{right: right} do
-
       assert Maybe.map(right, fn (x, y) -> x + y end).value.(20) == 30
+    end
+
+    test "it will compose two partially applied functions", %{right: right} do
+      result = right
+      |> Maybe.map(fn (x, y) -> x + y end)
+      |> Maybe.map(fn (x) -> x * 2 end)
+      assert result.value.(10) == 30
+    end
+
+    test "it will conform to the applicative interface (functions in a right can be mapped over a right)", %{right: right} do
+      result = right
+      |> Maybe.map(Either.new(fn (x) -> x * 2 end))
+      assert result == %Right{value: 20}
+    end
+
+    test "MONADZZZ! a wrapped function that returns a right (or left) will not break", %{right: right} do
+      result = right
+      |> Maybe.map(Either.new(fn (x) -> Either.new(x + 10) end))
+
+      assert result == %Right{value: 20}
     end
   end
 
