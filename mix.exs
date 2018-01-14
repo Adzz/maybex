@@ -4,7 +4,7 @@ defmodule Maybex.Mixfile do
   def project do
     [
       app: :maybex,
-      version: "0.0.2",
+      version: "0.0.3",
       elixir: "~> 1.5",
       # Docs
       name: "Maybex",
