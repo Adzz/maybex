@@ -60,7 +60,6 @@ Pull requests and issues are welcome!
 
 ## TODO
 
-- Partial function application / currying.
 - Expand on safe_pipe idea and name better
 - test more thoroughly (prop tests?)
 =================================================================================================================================================
