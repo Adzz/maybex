@@ -42,7 +42,7 @@ by adding `maybex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:maybex, "~> 0.0.2"}
+    {:maybex, "~> 0.0.3"}
   ]
 end
 ```
