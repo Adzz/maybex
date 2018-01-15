@@ -62,5 +62,3 @@ Pull requests and issues are welcome!
 
 - Expand on safe_pipe idea and name better
 - test more thoroughly (prop tests?)
-=================================================================================================================================================
-
