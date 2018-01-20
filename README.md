@@ -10,7 +10,7 @@ This will return either (see what I did there) a `Left` or a `Right`. `Left`'s a
 
 What does this buy us?
 
-Lets assume we want to do something to the value inside of the result of the `Either.new`. We would need to `map` over the thing that gets returned with a function. If we implement the same function differently for a `Left` and a `Right`, we can do two different things depending on the type of the thing that gets piped into map: 
+Lets assume we want to do something to the value inside of the result of the `Either.new`. We would need to `map` over the thing that gets returned with a function. If we implement the same function differently for a `Left` and a `Right`, we can do two different things depending on the type of the thing that gets piped into map:
 
 ```elixir
 Either.new(function_that_might_return_nil) |> Maybe.map(fn (x) -> x + 10 end)
@@ -42,7 +42,7 @@ by adding `maybex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:maybex, "~> 0.0.3"}
+    {:maybex, "~> 0.0.4"}
   ]
 end
 ```
