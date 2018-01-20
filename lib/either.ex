@@ -37,6 +37,8 @@ defmodule Either do
   """
   def new(value) do
     case value do
+      {:error, error} -> %Left{value: {:error, error}}
+      :error -> %Left{value: {:error, :error}}
       nil -> %Left{value: value}
       %Left{value: value} -> new(value)
       %Right{value: value} -> new(value)
