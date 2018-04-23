@@ -52,4 +52,13 @@ defmodule Right do
   defp curry(fun, arity, arguments) do
     fn arg -> curry(fun, arity - 1, [arg | arguments]) end
   end
+
+  defimpl Maybe do
+    defdelegate map(right, function), to: Right
+    defdelegate fold(right, left_branch, right_branch \\ fn(x) -> x end), to: Right
+
+    def safe_pipe(%Right{value: value}, _left_function, right_function) do
+      Either.new(right_function.(value))
+    end
+  end
 end
