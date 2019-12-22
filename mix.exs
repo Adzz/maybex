@@ -4,7 +4,7 @@ defmodule Maybex.Mixfile do
   def project do
     [
       app: :maybex,
-      version: "0.0.4",
+      version: "1.0.0",
       elixir: "~> 1.5",
       # Docs
       name: "Maybex",
@@ -12,11 +12,11 @@ defmodule Maybex.Mixfile do
       docs: [
         main: "Either",
         extras: ["README.md"]
-        ],
-      start_permanent: Mix.env == :prod,
+      ],
+      start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: description(),
-      package: package(),
+      package: package()
     ]
   end
 
