@@ -1,26 +1,35 @@
 defimpl Maybe, for: Tuple do
-  def map({:ok, stuff}, fun) do
-    Result.lift({:ok}, fun.(stuff))
+  def map({:ok, stuff}, fun), do: Result.lift({:ok}, fun.(stuff))
+  def map({:error, stuff}, _fun), do: {:error, stuff}
+  def map(t, _), do: error(t)
+
+  def map_error({:ok, stuff}, _fun), do: {:ok, stuff}
+  def map_error({:error, stuff}, fun), do: Result.lift({:error}, fun.(stuff))
+  def map_error(t, _), do: error(t)
+
+  def unwrap!({:ok, value}), do: value
+  def unwrap!({:error, value}), do: raise("Error: #{value}")
+  def unwrap!(t), do: error(t)
+
+  def unwrap({:ok, value}), do: value
+  def unwrap({:error, value}), do: value
+  def unwrap(t), do: error(t)
+
+  def unwrap_or_else({:ok, value}, _fun), do: value
+  def unwrap_or_else({:error, value}, fun), do: fun.(value)
+  def unwrap_or_else(t, _), do: error(t)
+
+  def is_error?({:ok, _}), do: false
+  def is_error?({:error, _}), do: true
+  def is_error?(t), do: error(t)
+
+  def is_ok?({:ok, _}), do: true
+  def is_ok?({:error, _}), do: false
+  def is_ok?(t), do: error(t)
+
+  defp error(t) do
+    raise("Tuple must be in the form {:ok, result} | {:error, error} got #{inspect(t)}")
   end
-
-  def map({:error, stuff}, _fun) do
-    {:error, stuff}
-  end
-
-  def map(t, _), do: raise("Tuple must be in the form {:ok, result} | {:error, error} got #{t}")
-
-  # def map_error({:ok, thing}, _fun) do
-  #   {:ok, thing}
-  # end
-
-  # def map_error({:error, thing}, fun) do
-  # end
-
-  # def unwrap!(%{value: value}), do: value
-  # def unwrap(%{value: value}), do: value
-  # def unwrap_or_else(%{value: value}, _fun), do: value
-  # def is_error?(_), do: false
-  # def is_ok?(_), do: true
 end
 
 # Both these are now possible. Which is fun. You could also implement it for a list yourself... Much better!
