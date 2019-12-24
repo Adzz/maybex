@@ -1,4 +1,6 @@
 defimpl Maybe, for: Tuple do
+  # Should we check here if is_right or is_left and decide whether to map
+  # based on that? Or should lift take care of it?
   def map({:ok, stuff}, fun), do: Result.lift({:ok}, fun.(stuff))
   def map({:error, stuff}, _fun), do: {:error, stuff}
   def map(t, _), do: error(t)
@@ -31,8 +33,3 @@ defimpl Maybe, for: Tuple do
     raise("Tuple must be in the form {:ok, result} | {:error, error} got #{inspect(t)}")
   end
 end
-
-# Both these are now possible. Which is fun. You could also implement it for a list yourself... Much better!
-# {:ok, 10} |> Maybe.map(fn x -> x * 10 end) |> Maybe.map(fn x -> x + 2 end)
-# Result.lift(10)  |> Maybe.map(fn x -> x * 10 end)  |> Maybe.map(fn x -> x + 2 end)
-#

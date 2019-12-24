@@ -1,5 +1,6 @@
 defmodule MaybeTest do
   use ExUnit.Case, async: true
+  doctest Maybe
 
   describe "map/2" do
     test "applies the fun to the value in the Ok if given an Ok" do
@@ -20,6 +21,12 @@ defmodule MaybeTest do
     test "handles a fun that returns an Error" do
       fun = fn _ -> %Error{value: "Nope"} end
       assert Maybe.map(%Ok{value: 10}, fun) == %Error{value: "Nope"}
+    end
+
+    test "handles mix and match" do
+      assert %Ok{value: 10}
+             |> Maybe.map(fn x -> x * 10 end)
+             |> Maybe.map(fn _x -> {:error, "Nope!"} end) == {:error, "Nope!"}
     end
   end
 
