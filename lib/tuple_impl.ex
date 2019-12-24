@@ -33,38 +33,3 @@ defimpl Maybe, for: Tuple do
     raise("Tuple must be in the form {:ok, result} | {:error, error} got #{inspect(t)}")
   end
 end
-
-defmodule Test do
-  use Ecto.Schema
-
-  embedded_schema do
-    field(:thing, :integer)
-  end
-end
-
-defimpl Maybe, for: Ecto.Changeset do
-  def map(changeset = %{valid?: true}, fun), do: fun.(changeset)
-  def map(changeset, _), do: changeset
-
-  def map_error(changeset = %{valid?: true}, _), do: changeset
-  def map_error(changeset, fun), do: fun.(changeset)
-
-  def unwrap!(changeset), do: Ecto.Changeset.apply_action!(changeset, :unwrap)
-
-  def unwrap(changeset) do
-    with {:ok, ch} <- Ecto.Changeset.apply_action(changeset, :unwrap) do
-      ch
-    else
-      {:error, ch} -> ch
-    end
-  end
-
-  def unwrap_or_else(changeset = %{valid?: true}, _), do: changeset
-  def unwrap_or_else(changeset, fun), do: fun.(changeset)
-
-  def is_error?(%{valid?: true}), do: false
-  def is_error?(%{valid?: _}), do: true
-
-  def is_ok?(%{valid?: true}), do: true
-  def is_ok?(%{valid?: _}), do: false
-end

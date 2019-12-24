@@ -21,16 +21,11 @@ defmodule Maybex.Mixfile do
   end
 
   def application do
-    [
-      extra_applications: [:logger]
-    ]
+    [extra_applications: [:logger]]
   end
 
   defp deps do
-    [
-      {:ex_doc, "~> 0.16", only: :dev, runtime: false},
-      {:ecto, ">=0.0.0"}
-    ]
+    [{:ex_doc, "~> 0.16", only: :dev, runtime: false}]
   end
 
   defp description do
