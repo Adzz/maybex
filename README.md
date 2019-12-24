@@ -71,11 +71,29 @@ Which again may be fine in small doses, but Maybex offers an alternative:
 |> Maybe.map(&turn_into_json/1)
 |> Maybe.map(&save_to_the_db/1)
 ```
+
+Or even:
+
+```elixir
+import Maybe.Pipe
+
+{:ok, %{valid?: true, data: "DATA!"}}
+~> turn_into_json()
+~> save_to_the_db()
+```
+
 </details>
 
 ### How would I use it?
 
-Here's how it works. Generally there are two types of things, there are error things and non error things. You can define for yourself what specifically counts as an error, and what isn't, but Maybex provides a few for you. We define `{:error, thing}` as an error thing, and `{:ok, thing}` as a non error thing.
+Here's how it works. Generally there are two types of things, there are error things and non error things. You can define for yourself what specifically counts as an error, and what isn't, but Maybex provides a few for you. We define the following:
+
+
+| Error              |   Non Error      |
+| -------------------|------------------|
+| `{:error, _}`      | `{:ok, _}`       |
+| `%Error{value: _}` | `%Ok{value: _}`  |
+
 
 If we pass `{:ok, thing}` into `Maybe.map/2` we will pass `thing` into the mapping function, and return that result wrapped in an okay tuple. If we map over an `{:error, thing}` we wont do anything, and will just return the error tuple:
 
@@ -92,20 +110,6 @@ iex> {:ok, 10}
 ...> |> Maybe.map(fn x -> x * 10 end)
 {:error, "Nope!"}
 
-iex> Maybe.unwrap({:ok, 10})
-10
-
-iex> Maybe.unwrap({:error, 10})
-10
-
-iex> Maybe.map_error({:error, 10}, fn x -> x * 10 end)
-{:error, 100}
-```
-
-Maybex has been implemented using protocols, meaning it is extendable by you yes you. Instead of tuples you can use an `Ok` struct and an `Error` struct instead:
-
-
-```elixir
 iex> %Ok{value: 10} |> Maybe.map(fn x -> x * 10 end)
 %Ok{value: 100}
 
@@ -127,6 +131,119 @@ iex> Maybe.unwrap(%Error{value: 10})
 iex> Maybe.map_error(%Error{value: 10}, fn x -> x * 10 end)
 %Error{value: 100}
 ```
+
+There is also an infix version of the `map` function which looks like this:
+
+```elixir
+import Maybe.Pipe
+
+iex> {:ok, 10} ~> fn x -> x * 10 end
+{:ok, 100}
+
+iex> {:error, 10} ~> fn x -> x * 10 end
+{:error, 10}
+
+iex> {:ok, 10}
+...> ~> fn x -> x * 10 end
+...> ~> fn _x -> {:error, "Nope!"} end
+...> ~> fn x -> x * 10 end
+{:error, "Nope!"}
+
+```
+
+Because Maybex is implemented with protocols, you can extend it by implementing Maybe for your own data type. Lets do it for an Ecto.Changeset for no reason whatsoever:
+
+```elixir
+
+defmodule Test do
+  use Ecto.Schema
+
+  embedded_schema do
+    field(:thing, :integer)
+  end
+end
+
+defimpl Maybe, for: Ecto.Changeset do
+  def map(changeset = %{valid?: true}, fun), do: fun.(changeset)
+  def map(changeset, _), do: changeset
+
+  def map_error(changeset = %{valid?: true}, _), do: changeset
+  def map_error(changeset, fun), do: fun.(changeset)
+
+  def unwrap!(changeset), do: Ecto.Changeset.apply_action!(changeset, :unwrap)
+
+  def unwrap(changeset) do
+    with {:ok, ch} <- Ecto.Changeset.apply_action(changeset, :unwrap) do
+      ch
+    else
+      {:error, ch} -> ch
+    end
+  end
+
+  def unwrap_or_else(changeset = %{valid?: true}, _), do: changeset
+  def unwrap_or_else(changeset, fun), do: fun.(changeset)
+
+  def is_error?(%{valid?: true}), do: false
+  def is_error?(%{valid?: _}), do: true
+
+  def is_ok?(%{valid?: true}), do: true
+  def is_ok?(%{valid?: _}), do: false
+end
+```
+```sh
+iex> %Test{} |> Ecto.Changeset.cast(%{thing: "1"}, [:thing]) |> Maybe.map_error(fn ch ->
+  Logger.warn(fn -> "Insert failed: #{inspect(ch)}" end)
+end)
+#Ecto.Changeset<
+  action: nil,
+  changes: %{thing: 1},
+  errors: [],
+  data: #Test<>,
+  valid?: true
+>
+
+iex> %Test{} |> Ecto.Changeset.cast(%{thing: false}, [:thing]) |> Maybe.map_error(fn ch ->
+  Logger.warn(fn -> "Insert failed: #{inspect(ch)}" end)
+end)
+[warn]  Insert failed: #Ecto.Changeset<action: nil, changes: %{}, errors: [thing: {"is invalid", [type: :integer, validation: :cast]}], data: #Test<>, valid?: false>
+```
+
+
+
+The Maybe protocol exposes several functions to help working with optional values. Check the docs but here are some more examples:
+
+```elixir
+iex> Maybe.unwrap({:ok, 10})
+10
+
+iex> Maybe.unwrap!({:ok, 10})
+10
+
+iex> Maybe.unwrap({:error, 10})
+10
+
+iex> Maybe.unwrap!({:error, 10})
+(RuntimeError) Error: 10
+
+iex> Maybe.map_error({:error, 10}, fn x -> x * 10 end)
+{:error, 100}
+
+iex> Maybe.map_error({:ok, 10}, fn x -> x * 10 end)
+{:ok, 10}
+
+iex> Maybe.unwrap_or_else({:ok, 10}, fn x -> x * 10 end)
+10
+
+iex> Maybe.unwrap_or_else({:error, 10}, fn x -> x * 10 end)
+10
+
+iex> {:ok, 10} ~> fn x -> x * 10 end |> Maybe.unwrap()
+100
+```
+
+
+
+
 
 
 There are a list of functions that behave similarly check [the docs](https://hexdocs.pm/maybex) for more thorough examples.

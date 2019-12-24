@@ -56,5 +56,6 @@ defprotocol Maybe do
   Returns true if the thing is not an error, false otherwise
   """
   def is_ok?(thing)
-  # We should make it so that the protocol itself can be extended by the users of the library.
+
+  # We should make it so that the protocol itself can be extended by the users of the library... Trippy
 end
