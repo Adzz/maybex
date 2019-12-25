@@ -85,9 +85,10 @@ import Maybe.Pipe
 </details>
 
 ### How would I use it?
+<details>
+<summary>Here's how it works.</summary>
 
-Here's how it works. Generally there are two types of things, there are error things and non error things. You can define for yourself what specifically counts as an error, and what isn't, but Maybex provides a few for you. We define the following:
-
+Generally there are two types of things, there are error things and non error things. You can define for yourself what specifically counts as an error, and what isn't, but Maybex provides a few for you. We define the following:
 
 | Error              |   Non Error      |
 | -------------------|------------------|
@@ -132,7 +133,7 @@ iex> Maybe.map_error(%Error{value: 10}, fn x -> x * 10 end)
 %Error{value: 100}
 ```
 
-There is also an infix version of the `map` function which looks like this:
+There is also an infix version of the `map` function which looks like this `~>`
 
 ```elixir
 import Maybe.Pipe
@@ -150,8 +151,13 @@ iex> {:ok, 10}
 {:error, "Nope!"}
 
 ```
+</details>
 
-Because Maybex is implemented with protocols, you can extend it by implementing Maybe for your own data type. Lets do it for an Ecto.Changeset for no reason whatsoever:
+### Implementing your own Maybe Type
+
+<details>
+  <summary>Because Maybex is implemented with protocols you can extend it by implementing Maybe for your own data type.</summary>
+Lets do it for an Ecto.Changeset for no reason whatsoever:
 
 ```elixir
 
@@ -207,8 +213,9 @@ iex> %Test{} |> Ecto.Changeset.cast(%{thing: false}, [:thing]) |> Maybe.map_erro
 end)
 [warn]  Insert failed: #Ecto.Changeset<action: nil, changes: %{}, errors: [thing: {"is invalid", [type: :integer, validation: :cast]}], data: #Test<>, valid?: false>
 ```
+</details>
 
-
+### The Maybe functions
 
 The Maybe protocol exposes several functions to help working with optional values. Check the docs but here are some more examples:
 
@@ -240,11 +247,6 @@ iex> Maybe.unwrap_or_else({:error, 10}, fn x -> x * 10 end)
 iex> {:ok, 10} ~> fn x -> x * 10 end |> Maybe.unwrap()
 100
 ```
-
-
-
-
-
 
 There are a list of functions that behave similarly check [the docs](https://hexdocs.pm/maybex) for more thorough examples.
 
