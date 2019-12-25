@@ -1,6 +1,4 @@
 defimpl Maybe, for: Tuple do
-  # Should we check here if is_right or is_left and decide whether to map
-  # based on that? Or should lift take care of it?
   def map({:ok, stuff}, fun), do: Result.lift({:ok}, fun.(stuff))
   def map({:error, stuff}, _fun), do: {:error, stuff}
   def map(t, _), do: error(t)

@@ -28,6 +28,8 @@ defprotocol Maybe do
   @doc """
   Like map, but works on the error only. If passed an ok value, passes it through untouched.
 
+  ### Examples
+
       iex> Maybe.map_error({:error, "Nope"}, fn msg -> msg <> " not at all" end)
       {:error, "Nope not at all"}
 
@@ -45,6 +47,8 @@ defprotocol Maybe do
   @doc """
   Returns the value contained inside the thing, raising if the thing is an error.
 
+  ### Examples
+
       iex> Maybe.unwrap!({:ok, 10})
       10
 
@@ -55,6 +59,8 @@ defprotocol Maybe do
 
   @doc """
   Returns the value contained inside the thing, regardless of whether it is an error or not.
+
+  ### Examples
 
       iex> Maybe.unwrap({:ok, 10})
       10
@@ -68,6 +74,8 @@ defprotocol Maybe do
   Returns the value inside the Ok if passed an Ok, or passes the value inside the Error to the
   or_else fun and calls it.
 
+  ### Examples
+
       iex> Maybe.unwrap_or_else({:ok, 10}, fn x -> raise x end)
       10
 
@@ -79,6 +87,8 @@ defprotocol Maybe do
   @doc """
   Returns true if the thing is an Error, false otherwise.
 
+  ### Examples
+
       iex> Maybe.is_error?({:error, nil})
       true
 
@@ -89,6 +99,8 @@ defprotocol Maybe do
 
   @doc """
   Returns true if the thing is not an error, false otherwise.
+
+  ### Examples
 
       iex> Maybe.is_ok?({:error, nil})
       false
