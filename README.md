@@ -242,7 +242,7 @@ iex> Maybe.unwrap_or_else({:ok, 10}, fn x -> x * 10 end)
 10
 
 iex> Maybe.unwrap_or_else({:error, 10}, fn x -> x * 10 end)
-10
+100
 
 iex> {:ok, 10} ~> fn x -> x * 10 end |> Maybe.unwrap()
 100
