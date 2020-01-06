@@ -1,11 +1,11 @@
 defmodule Maybe.Pipe do
   @moduledoc ~S"""
-  Macro for piping conditionally into the next function.
+  Macro for piping conditionally into the next function. This is an alias for the function Maybe.map/2
 
   If the value piped in is an error tuple the next function in the pipe
   will not be called and the value is returned.
 
-  iex> {:error, 5} ~> Kernel.+(2)
+  iex> import Maybe.Pipe; {:error, 5} ~> Kernel.+(2)
   {:error, 5}
 
   If the value piped in is an ok tuple it will be flattened to just the
@@ -13,16 +13,12 @@ defmodule Maybe.Pipe do
 
   The value finally returned from the pipe will be an ok/error tuple.
 
-  iex> {:ok, 5} ~> Kernel.+(2)
+  iex> import Maybe.Pipe;  {:ok, 5} ~> &Kernel.+(&1, 2)
   {:ok, 7}
 
-  iex> {:ok, 5} ~> Kernel.+(2) ~> Kernel.+(3)
+  iex> import Maybe.Pipe;
+  ...> {:ok, 5} ~> fn x -> x + 2 end ~> fn x -> x + 3 end
   {:ok, 10}
-
-  If the value piped in is not an ok/error tuple a IncorrectMaybePipeError will be raised.
-
-  In cases where a non-tuple value needs to be passed in a regular pipe (|>) should
-  be used instead.
 
   For more information about the motivation for this macro you can start reading about
   [point-free programming](https://en.wikipedia.org/wiki/Tacit_programming).
