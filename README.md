@@ -78,8 +78,8 @@ Or even:
 import Maybe.Pipe
 
 {:ok, %{valid?: true, data: "DATA!"}}
-~> turn_into_json()
-~> save_to_the_db()
+~> &turn_into_json/1
+~> &save_to_the_db/1
 ```
 
 </details>
