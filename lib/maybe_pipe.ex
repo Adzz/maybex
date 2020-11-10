@@ -26,7 +26,7 @@ defmodule Maybe.Pipe do
   """
   defmacro left ~> right do
     quote do
-      unquote(left) |> Maybe.map(unquote(right))
+      Maybe.map(unquote(left), unquote(right))
     end
   end
 end

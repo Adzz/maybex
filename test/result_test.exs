@@ -3,23 +3,25 @@ defmodule ResultTest do
 
   describe "Lift" do
     test "Puts a value into an Ok type" do
-      assert Result.lift(%Ok{}, 10) == %Ok{value: 10}
+      assert Result.lift(%Maybe.Ok{}, 10) == %Maybe.Ok{value: 10}
     end
 
     test "If it's already an Ok it doesn't nest it" do
-      assert Result.lift(%Ok{}, %Ok{value: 10}) == %Ok{value: 10}
+      assert Result.lift(%Maybe.Ok{}, %Maybe.Ok{value: 10}) == %Maybe.Ok{value: 10}
     end
 
     test "if handed an error returns that error" do
-      assert Result.lift(%Ok{}, %Error{value: "Thing"}) == %Error{value: "Thing"}
+      assert Result.lift(%Maybe.Ok{}, %Maybe.Error{value: "Thing"}) == %Maybe.Error{
+               value: "Thing"
+             }
     end
 
-    test "%Ok{} and {:error}" do
-      assert Result.lift(%Ok{}, {:error, "Thing"}) == {:error, "Thing"}
+    test "%Maybe.Ok{} and {:error}" do
+      assert Result.lift(%Maybe.Ok{}, {:error, "Thing"}) == {:error, "Thing"}
     end
 
-    test "%Ok{} and {:ok}" do
-      assert Result.lift(%Ok{}, {:ok, "Thing"}) == %Ok{value: "Thing"}
+    test "%Maybe.Ok{} and {:ok}" do
+      assert Result.lift(%Maybe.Ok{}, {:ok, "Thing"}) == %Maybe.Ok{value: "Thing"}
     end
   end
 
@@ -38,38 +40,40 @@ defmodule ResultTest do
       assert Result.lift({:ok}, {:error, {:error, "Thing"}}) == {:error, {:error, "Thing"}}
     end
 
-    test "{:ok} and %Error{}" do
-      assert Result.lift({:ok}, %Error{value: "Thing"}) == %Error{value: "Thing"}
+    test "{:ok} and %Maybe.Error{}" do
+      assert Result.lift({:ok}, %Maybe.Error{value: "Thing"}) == %Maybe.Error{value: "Thing"}
 
-      assert Result.lift({:ok}, %Error{value: {:error, "Thing"}}) == %Error{
+      assert Result.lift({:ok}, %Maybe.Error{value: {:error, "Thing"}}) == %Maybe.Error{
                value: {:error, "Thing"}
              }
     end
 
-    test "{:ok} and %Ok{}" do
-      assert Result.lift({:ok}, %Ok{value: 10}) == {:ok, 10}
+    test "{:ok} and %Maybe.Ok{}" do
+      assert Result.lift({:ok}, %Maybe.Ok{value: 10}) == {:ok, 10}
     end
   end
 
   describe "Lift error" do
     test "Puts a value into an Ok type" do
-      assert Result.lift(%Error{}, 10) == %Error{value: 10}
+      assert Result.lift(%Maybe.Error{}, 10) == %Maybe.Error{value: 10}
     end
 
     test "If it's already an Ok it leaves it as that" do
-      assert Result.lift(%Error{}, %Ok{value: 10}) == %Ok{value: 10}
+      assert Result.lift(%Maybe.Error{}, %Maybe.Ok{value: 10}) == %Maybe.Ok{value: 10}
     end
 
     test "if handed an error returns that error" do
-      assert Result.lift(%Error{}, %Error{value: "Thing"}) == %Error{value: "Thing"}
+      assert Result.lift(%Maybe.Error{}, %Maybe.Error{value: "Thing"}) == %Maybe.Error{
+               value: "Thing"
+             }
     end
 
-    test "%Error{} and {:error}" do
-      assert Result.lift(%Error{}, {:error, "Thing"}) == %Error{value: "Thing"}
+    test "%Maybe.Error{} and {:error}" do
+      assert Result.lift(%Maybe.Error{}, {:error, "Thing"}) == {:error, "Thing"}
     end
 
-    test "%Error{} and {:ok}" do
-      assert Result.lift(%Error{}, {:ok, "Thing"}) == {:ok, "Thing"}
+    test "%Maybe.Error{} and {:ok}" do
+      assert Result.lift(%Maybe.Error{}, {:ok, "Thing"}) == {:ok, "Thing"}
     end
   end
 
@@ -86,12 +90,12 @@ defmodule ResultTest do
       assert Result.lift({:error}, {:error, "Thing"}) == {:error, "Thing"}
     end
 
-    test "{:error} and %Error{}" do
-      assert Result.lift({:error}, %Error{value: "Thing"}) == {:error, "Thing"}
+    test "{:error} and %Maybe.Error{}" do
+      assert Result.lift({:error}, %Maybe.Error{value: "Thing"}) == {:error, "Thing"}
     end
 
-    test "{:error} and %Ok{}" do
-      assert Result.lift({:error}, %Ok{value: "Thing"}) == %Ok{value: "Thing"}
+    test "{:error} and %Maybe.Ok{}" do
+      assert Result.lift({:error}, %Maybe.Ok{value: "Thing"}) == %Maybe.Ok{value: "Thing"}
     end
   end
 end

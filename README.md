@@ -93,7 +93,7 @@ Generally there are two types of things, there are error things and non error th
 | Error              |   Non Error      |
 | -------------------|------------------|
 | `{:error, _}`      | `{:ok, _}`       |
-| `%Error{value: _}` | `%Ok{value: _}`  |
+| `%Maybe.Error{value: _}` | `%Maybe.Ok{value: _}`  |
 
 
 If we pass `{:ok, thing}` into `Maybe.map/2` we will pass `thing` into the mapping function, and return that result wrapped in an okay tuple. If we map over an `{:error, thing}` we wont do anything, and will just return the error tuple:
@@ -111,26 +111,26 @@ iex> {:ok, 10}
 ...> |> Maybe.map(fn x -> x * 10 end)
 {:error, "Nope!"}
 
-iex> %Ok{value: 10} |> Maybe.map(fn x -> x * 10 end)
-%Ok{value: 100}
+iex> %Maybe.Ok{value: 10} |> Maybe.map(fn x -> x * 10 end)
+%Maybe.Ok{value: 100}
 
-iex> %Error{value: 10} |> Maybe.map(fn x -> x * 10 end)
-%Error{value: 10}
+iex> %Maybe.Error{value: 10} |> Maybe.map(fn x -> x * 10 end)
+%Maybe.Error{value: 10}
 
-iex> %Ok{value: 10}
+iex> %Maybe.Ok{value: 10}
 ...> |> Maybe.map(fn x -> x * 10 end)
-...> |> Maybe.map(fn _x -> %Error{value: "Nope!"} end)
+...> |> Maybe.map(fn _x -> %Maybe.Error{value: "Nope!"} end)
 ...> |> Maybe.map(fn x -> x * 10 end)
-%Error{value: "Nope!"}
+%Maybe.Error{value: "Nope!"}
 
-iex> Maybe.unwrap(%Ok{value: 10})
+iex> Maybe.unwrap(%Maybe.Ok{value: 10})
 10
 
-iex> Maybe.unwrap(%Error{value: 10})
+iex> Maybe.unwrap(%Maybe.Error{value: 10})
 10
 
-iex> Maybe.map_error(%Error{value: 10}, fn x -> x * 10 end)
-%Error{value: 100}
+iex> Maybe.map_error(%Maybe.Error{value: 10}, fn x -> x * 10 end)
+%Maybe.Error{value: 100}
 ```
 
 There is also an infix version of the `map` function which looks like this `~>`
@@ -157,7 +157,7 @@ iex> {:ok, 10}
 
 <details>
   <summary>Because Maybex is implemented with protocols you can extend it by implementing Maybe for your own data type.</summary>
-Lets do it for an Ecto.Changeset for no reason whatsoever:
+Lets do it for an Ecto.Changeset:
 
 ```elixir
 

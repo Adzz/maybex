@@ -17,11 +17,11 @@ defprotocol Maybe do
       iex> {:error, 10} |> Maybe.map(fn x -> {:error, x * 10} end)
       {:error, 10}
 
-      iex> %Error{value: "no"} |> Maybe.map(fn x -> x * 10 end)
-      %Error{value: "no"}
+      iex> %Maybe.Error{value: "no"} |> Maybe.map(fn x -> x * 10 end)
+      %Maybe.Error{value: "no"}
 
-      iex> %Ok{value: 10} |> Maybe.map(fn x -> x * 10 end)
-      %Ok{value: 100}
+      iex> %Maybe.Ok{value: 10} |> Maybe.map(fn x -> x * 10 end)
+      %Maybe.Ok{value: 100}
   """
   def map(thing, fun)
 

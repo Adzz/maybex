@@ -1,8 +1,8 @@
-defmodule Ok do
+defmodule Maybe.Ok do
   defstruct [:value]
 
   defimpl Maybe do
-    def map(%{value: value}, fun), do: Result.lift(%Ok{}, fun.(value))
+    def map(%{value: value}, fun), do: Result.lift(%Maybe.Ok{}, fun.(value))
     def map_error(ok, _fun), do: ok
     def unwrap!(%{value: value}), do: value
     def unwrap(%{value: value}), do: value

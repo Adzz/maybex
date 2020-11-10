@@ -4,16 +4,16 @@ defprotocol Result do
   def is_left?(thing)
 end
 
-defimpl Result, for: Ok do
+defimpl Result, for: Maybe.Ok do
   def lift(_, value) do
     if Result.impl_for(value) do
       if Result.is_left?(value) do
         value
       else
         if Maybe.impl_for(value) do
-          %Ok{value: Maybe.unwrap(value)}
+          value
         else
-          %Ok{value: value}
+          %Maybe.Ok{value: value}
           # raise(Protocol.UndefinedError,
           #   protocol: Maybe,
           #   value: value,
@@ -23,21 +23,21 @@ defimpl Result, for: Ok do
       end
     else
       # If it's not a left or a right it can be put in either safely.
-      %Ok{value: value}
+      %Maybe.Ok{value: value}
     end
   end
 
   def is_left?(_), do: false
 end
 
-defimpl Result, for: Error do
+defimpl Result, for: Maybe.Error do
   def lift(_, value) do
     if Result.impl_for(value) do
       if Result.is_left?(value) do
         if Maybe.impl_for(value) do
-          %Error{value: Maybe.unwrap(value)}
+          value
         else
-          %Error{value: value}
+          %Maybe.Error{value: value}
           # raise(Protocol.UndefinedError,
           #   protocol: Maybe,
           #   value: value,
@@ -48,7 +48,7 @@ defimpl Result, for: Error do
         value
       end
     else
-      %Error{value: value}
+      %Maybe.Error{value: value}
     end
   end
 
@@ -60,12 +60,11 @@ defimpl Result, for: Tuple do
     if Result.impl_for(value) do
       # This means we have a thing we can 'lift'
       if Result.is_left?(value) do
-        # This means we the value is "correct", and therefore we can pass it through.
-        # We can think about it after
+        # is error...
         value
       else
         if Maybe.impl_for(value) do
-          {:ok, Maybe.unwrap(value)}
+          value
         else
           # raise(Protocol.UndefinedError,
           #   protocol: Maybe,
@@ -85,9 +84,7 @@ defimpl Result, for: Tuple do
       if Result.is_left?(value) do
         # is an Error
         if Maybe.impl_for(value) do
-          # Now we know we want to unwrap it from the right it is in, and put it in our
-          # right
-          {:error, Maybe.unwrap(value)}
+          value
         else
           {:error, value}
           # We shouldn't implement lift and not implement maybe I think.
@@ -105,16 +102,19 @@ defimpl Result, for: Tuple do
     end
   end
 
+  def lift(t, _) do
+    raise(
+      "Tuple type not supported, you can only lift into an {:ok} or an {:error}, " <>
+        " got #{inspect(t)}. If you have a value you wish to lift into an error do this:\n" <>
+        "Result.lift({:error}, :thing)\n\n If you have a value you wish to lift into an okay tuple " <>
+        "do this:\n Result.lift({:ok}, :thing)\n\n"
+    )
+  end
+
   def is_left?({:ok, _}), do: false
   def is_left?({:error, _}), do: true
+
+  def is_left?(t) do
+    raise("Tuple must be in the form {:ok, result} | {:error, error} got #{inspect(t)}")
+  end
 end
-
-# %Ok{value: 10} |> Maybe.map(fn x -> x * 10 end) |> Maybe.map(fn _x -> %Error{value: "Nope!"} end) |> Maybe.map(fn x -> x * 10 end)
-# %Error{value: "Nope!"}
-
-# %Ok{value: 10} |> Maybe.map(fn x -> x * 10 end) |> Maybe.map(fn _x -> {:error, "Nope!"} end) |> Maybe.map(fn x -> x * 10 end)
-
-# {:error, "Nope!"}
-
-# %Ok{value: 10} |> Maybe.map(fn x -> x * 10 end) |> Maybe.map(fn x -> {:ok, x} end) |> Maybe.map(fn x -> %Error{value: 10} end)
-# {:ok, 1000}
